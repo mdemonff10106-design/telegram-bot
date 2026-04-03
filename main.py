@@ -35,7 +35,7 @@ def call_gemini(chat_id, user_message):
     # Keep last 20 messages to avoid token overflow
     history = conversation_history[chat_id][-20:]
 
-    url = f"{GEMINI_BASE_URL}/v1/models/gemini-3.1-pro-preview:generateContent"
+    url = f"{GEMINI_BASE_URL}/models/gemini-3.1-pro-preview:generateContent"
     headers = {
         "Content-Type": "application/json",
         "x-goog-api-key": GEMINI_API_KEY
