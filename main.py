@@ -125,6 +125,10 @@ def keep_alive():
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    # Remove any old keyboard buttons
+    remove_markup = telebot.types.ReplyKeyboardRemove()
+    bot.send_message(message.chat.id, "⏳ Loading...", reply_markup=remove_markup)
+
     markup = telebot.types.InlineKeyboardMarkup()
     markup.add(telebot.types.InlineKeyboardButton("🚀 Start Chatting", callback_data="start_chat"))
     bot.send_message(message.chat.id,
