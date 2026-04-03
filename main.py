@@ -53,24 +53,45 @@ def handle_ai_chat(message):
     chat_id = message.chat.id
     bot.send_chat_action(chat_id, 'typing')
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash-lite',
-            contents=message.text
-        )
+    retries = 3
+    for attempt in range(retries):
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.0-flash-lite',
+                contents=message.text
+            )
 
-        reply = response.text
+            # Guard against empty/blocked responses
+            reply = response.text
+            if not reply:
+                bot.reply_to(message, "I couldn't generate a response. Please try asking again.")
+                return
 
-        # Handle long responses (Telegram limit is 4096)
-        if len(reply) > 4000:
-            for i in range(0, len(reply), 4000):
-                bot.send_message(chat_id, reply[i:i+4000])
-        else:
-            bot.reply_to(message, reply)
+            # Handle long responses (Telegram limit is 4096)
+            if len(reply) > 4000:
+                for i in range(0, len(reply), 4000):
+                    bot.send_message(chat_id, reply[i:i+4000])
+            else:
+                # Try with Markdown first, fall back to plain text
+                try:
+                    bot.reply_to(message, reply, parse_mode="Markdown")
+                except Exception:
+                    bot.reply_to(message, reply)
+            return
 
-    except Exception as e:
-        bot.reply_to(message, "System busy. Please try again in a moment.")
-        print(f"Error: {e}")
+        except Exception as e:
+            error_str = str(e)
+            print(f"Attempt {attempt + 1} error: {error_str}")
+
+            # Retry on quota/rate limit errors after a short wait
+            if '429' in error_str and attempt < retries - 1:
+                time.sleep(5)
+                bot.send_chat_action(chat_id, 'typing')
+                continue
+
+            # Final attempt failed
+            bot.reply_to(message, "❌ Something went wrong. Please try again in a moment.")
+            return
 
 # --- START THE ENGINE ---
 if __name__ == "__main__":
