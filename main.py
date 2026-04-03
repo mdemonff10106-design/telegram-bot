@@ -182,7 +182,7 @@ def handle_ai_chat(message):
                 bot.send_chat_action(chat_id, 'typing')
                 continue
 
-            bot.reply_to(message, "❌ Something went wrong. Please try again in a moment.")
+            bot.reply_to(message, f"❌ Error: {error_str[:300]}")
             return
 
 # --- START ---
