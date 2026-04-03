@@ -23,7 +23,7 @@ def home():
     return "<h1>Gemini Premium: STATUS ACTIVE 🟢</h1>"
 
 def run_server():
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=5000)
 
 def keep_alive():
     """Prevents Replit from sleeping by running a web server"""
