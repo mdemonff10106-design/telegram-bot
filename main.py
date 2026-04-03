@@ -182,11 +182,15 @@ def handle_ai_chat(message):
             print(f"Attempt {attempt + 1} error: {error_str}")
 
             if attempt < retries - 1:
-                time.sleep(3)
+                wait = 10 if "429" in error_str else 3
+                time.sleep(wait)
                 bot.send_chat_action(chat_id, 'typing')
                 continue
 
-            bot.reply_to(message, f"❌ Error: {error_str[:300]}")
+            if "429" in error_str:
+                bot.reply_to(message, "⏳ The AI is busy right now (rate limit). Please wait 30 seconds and try again.")
+            else:
+                bot.reply_to(message, f"❌ Error: {error_str[:300]}")
             return
 
 # --- START ---
