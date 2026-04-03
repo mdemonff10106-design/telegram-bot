@@ -36,7 +36,7 @@ def start(message):
     markup.add(telebot.types.InlineKeyboardButton("🚀 Start Chatting", callback_data="start_chat"))
     bot.send_message(message.chat.id,
         "👋 Welcome!\n\n"
-        "🤖 System: Gemini 1.5 Flash\n"
+        "🤖 System: Gemini 2.0 Flash\n"
         "🟢 Status: Online\n\n"
         "Press the button below to begin, or just type any message!",
         reply_markup=markup)
@@ -55,7 +55,7 @@ def handle_ai_chat(message):
 
     try:
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.0-flash-lite',
             contents=message.text
         )
 
