@@ -32,11 +32,20 @@ def keep_alive():
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton("🚀 Start Chatting", callback_data="start_chat"))
     bot.send_message(message.chat.id,
-        "Welcome!\n\n"
-        "System: Gemini 2.0 Flash\n"
-        "Status: Running\n\n"
-        "I can solve complex problems, write code, and answer anything. Send me a message!")
+        "👋 Welcome!\n\n"
+        "🤖 System: Gemini 1.5 Flash\n"
+        "🟢 Status: Online\n\n"
+        "Press the button below to begin, or just type any message!",
+        reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "start_chat")
+def start_chat_callback(call):
+    bot.answer_callback_query(call.id)
+    bot.send_message(call.message.chat.id,
+        "✅ You're all set! Ask me anything — I can write code, solve problems, answer questions, and more.")
 
 # --- AI CHAT LOGIC ---
 @bot.message_handler(func=lambda message: True)
