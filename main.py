@@ -7,7 +7,7 @@ from threading import Thread
 
 # --- INITIALIZATION ---
 TOKEN = os.getenv('BOT_TOKEN')
-GEMINI_KEY = os.getenv('GEMINI_KEY')
+GEMINI_KEY = os.getenv('GOOGLE_API_KEY')
 
 bot = telebot.TeleBot(TOKEN)
 client = genai.Client(api_key=GEMINI_KEY)
