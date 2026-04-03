@@ -7,8 +7,19 @@ from threading import Thread
 
 # --- INITIALIZATION ---
 TOKEN = os.getenv('BOT_TOKEN')
-GEMINI_BASE_URL = os.getenv('AI_INTEGRATIONS_GEMINI_BASE_URL', '').rstrip('/')
-GEMINI_API_KEY = os.getenv('AI_INTEGRATIONS_GEMINI_API_KEY')
+
+# Support both Replit proxy and direct Google API key
+REPLIT_BASE_URL = os.getenv('AI_INTEGRATIONS_GEMINI_BASE_URL', '').rstrip('/')
+REPLIT_API_KEY = os.getenv('AI_INTEGRATIONS_GEMINI_API_KEY')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+# Use Replit proxy if available, otherwise use direct Google API
+if REPLIT_BASE_URL and REPLIT_API_KEY:
+    GEMINI_BASE_URL = REPLIT_BASE_URL
+    GEMINI_API_KEY = REPLIT_API_KEY
+else:
+    GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com'
+    GEMINI_API_KEY = GOOGLE_API_KEY
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -56,7 +67,14 @@ def call_gemini(chat_id, user_message):
     # Keep last 40 messages for rich context
     history = conversation_history[chat_id][-40:]
 
-    url = f"{GEMINI_BASE_URL}/models/gemini-3.1-pro-preview:generateContent"
+    # Replit proxy uses no version prefix; direct Google API uses v1beta
+    if REPLIT_BASE_URL and REPLIT_API_KEY:
+        model = "gemini-3.1-pro-preview"
+        url = f"{GEMINI_BASE_URL}/models/{model}:generateContent"
+    else:
+        model = "gemini-2.0-flash"
+        url = f"{GEMINI_BASE_URL}/v1beta/models/{model}:generateContent"
+
     headers = {
         "Content-Type": "application/json",
         "x-goog-api-key": GEMINI_API_KEY
